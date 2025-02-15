@@ -1,9 +1,14 @@
 import { Field, Form, Formik, ErrorMessage } from 'formik';
 import s from "./ContactForm.module.css"
 import * as Yup from 'yup';
+import { useDispatch, useSelector } from 'react-redux';
+import { addContact } from '../../redux/contactsSlice';
 
 
-const ContactForm = ({addContact}) => {
+const ContactForm = () => {
+
+    const dispatch = useDispatch();
+    const contacts = useSelector(state => state.contacts.items);
 
     const onlyLetters = /^[A-Za-zА-Яа-яЄєІіЇїҐґ-\s]+$/;
     const onlyNumbers = /^[0-9-]+$/;
@@ -21,14 +26,23 @@ const ContactForm = ({addContact}) => {
           .matches(onlyNumbers, 'Only numbers and dashes allowed'),
       });
 
+      const handleSubmit = (values, { resetForm }) => {
+        const { name, number } = values;
+        const isExisting = contacts.some(contact => contact.number === number);
+
+        if (isExisting) {
+            alert(`${number} is already in contacts`);
+            return;
+        }
+        dispatch(addContact({ name, number })); 
+        resetForm();
+    };
+
     return (
-        <Formik
-        initialValues={{ name: '', number: '' }}
-        validationSchema={applySchema}
-        onSubmit={(values, { resetForm }) => {
-          addContact(values.name, values.number);
-          resetForm(); 
-        }}
+      <Formik
+      initialValues={{ name: '', number: '' }}
+      validationSchema={applySchema}
+      onSubmit={handleSubmit}
       >
       {({ handleSubmit }) => (
         <Form onSubmit={handleSubmit} className={s.form}>
