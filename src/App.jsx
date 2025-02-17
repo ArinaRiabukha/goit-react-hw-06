@@ -8,11 +8,6 @@ import { addContact, deleteContact } from "./redux/contactsSlice";
 const App = () => {
   const dispatch = useDispatch();
   const contacts = useSelector(state => state.contacts.items);
-  const filter = useSelector(state => state.filters.name.toLowerCase());
-
-  const filteredContacts = contacts.filter(contact =>
-    contact.name.toLowerCase().includes(filter)
-  );
   const handleAddContact = (name, number) => {
     if (!name || !number) return;
 
@@ -27,7 +22,7 @@ const App = () => {
       <h1 className={s.title}>Phonebook</h1>
       <ContactForm addContact={handleAddContact}/>
       {contacts.length > 0 && <SearchBox />}
-      <ContactList contacts={filteredContacts} handleDelete={handleDeleteContact} />
+      <ContactList handleDelete={handleDeleteContact} />
     </div>
   );
 };
